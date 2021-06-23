@@ -21,6 +21,7 @@ const seedDB = async() => {
         const random1000 = Math.floor(Math.random() * 1000) // GENERATES RANDOM NUMBER FROM 0 TO 1000(THAT'S HAVE MANY CITIES IS IN  THE FILE)
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({ // CREATES NEW CAMPGROUND FOR EACH LOOP
+            author: '60d0a607823b7d5308c14e32',
             location: `${cities[random1000].city}, ${cities[random1000].state}`, // USING THE RANDOM NUMBER IT PICKS BOTH CITY AND STATE
             title: `${sample(descriptors)} ${sample(places)}`, // PASSES TWO ARRAYS INTO SAMPLE FUNCTION AND PICKS TWO RANDOM PLACES AND DESCRIPTIONS
             image: 'https://source.unsplash.com/collection/483251',

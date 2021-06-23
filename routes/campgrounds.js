@@ -1,21 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const wrapAsync = require('../utils/wrapAsync');
-const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
-const { campgroundSchema } = require('../schemas');
-const {isLoggedIn} = require('../middleware');
-const validateCampground = (req, res, next) => {
-    // the error is deconstructed from campgroundSchema
-    const { error } = campgroundSchema.validate(req.body);
-    // IF THERE IS ERROR, MAP OVER DETAILS OF THE ERROR(MAY BE MORE THAN ONE), JOIN THEM TOGETHER AND THROW THE ERROR WITH THE DETAILS AND STATUS TO ERROR HANDLER AT THE BOTTOM TO RENDER ERROR TEMPLATE
-    if (error) {
-      const msg = error.details.map((el) => el.message).join(',');
-      throw new ExpressError(msg, 400);
-    } else {
-      next();
-    }
-  };
+const {isLoggedIn, isAuthor, validateCampground} = require('../middleware');
 
 // ALL CAMPGROUNDS
 router.get('/',wrapAsync(async (req, res, next) => {
@@ -30,8 +17,9 @@ router.get('/',wrapAsync(async (req, res, next) => {
   });
   
   // DISPLAYING EDIT FORM
-  router.get('/:id/edit',isLoggedIn, wrapAsync(async (req, res) => {
-      const campground = await Campground.findById(req.params.id);
+  router.get('/:id/edit',isLoggedIn, isAuthor, wrapAsync(async (req, res) => {
+      const { id } = req.params;
+      const campground = await Campground.findById(id);
       if(!campground) {
         req.flash('error', 'Cannot find requested campground!');
         return res.redirect('/campgrounds')
@@ -42,7 +30,9 @@ router.get('/',wrapAsync(async (req, res, next) => {
   
   //INDIVIDUAL CAMPGROUND
   router.get('/:id',wrapAsync(async (req, res) => {
-      const campground = await Campground.findById(req.params.id).populate('reviews');
+    //nested populate
+      const campground = await Campground.findById(req.params.id).populate({path: 'reviews', populate: {path: 'author'}}).populate('author');
+      console.log(campground)
       if(!campground) {
         req.flash('error', 'Cannot find requested campground!');
         return res.redirect('/campgrounds')
@@ -51,25 +41,24 @@ router.get('/',wrapAsync(async (req, res, next) => {
     })
   );
   // UPDATING DATABASE WITH NEW VALUES FOR A CAMPGROUND
-  router.put('/:id',isLoggedIn, validateCampground, wrapAsync(async (req, res) => {
+  router.put('/:id',isLoggedIn, isAuthor, validateCampground, wrapAsync(async (req, res) => {
       const { id } = req.params;
-      const campground = await Campground.findByIdAndUpdate(id, {
-        ...req.body.campground,
-      });
-      req.flash('success', 'You have successfully updated a campground!')
+      const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground});
+      req.flash('success', 'You have successfully updated a campground!');
       res.redirect(`/campgrounds/${campground._id}`);
-    })
-  );
+      }));
+
   // ADDING NEW CAMPGROUND AND SAVING TO DATABASE
   router.post('/',isLoggedIn, validateCampground, wrapAsync(async (req, res, next) => {
       const campground = new Campground(req.body.campground);
+      campground.author = req.user._id;
       await campground.save();
       req.flash('success', 'You have successfully made a new campground!')
       res.redirect(`/campgrounds/${campground._id}`);
     })
   );
   // DELETING A CAMPGROUND(BUTTON)
-  router.delete('/:id', isLoggedIn, wrapAsync(async (req, res) => {
+  router.delete('/:id', isLoggedIn, isAuthor, wrapAsync(async (req, res) => {
       const { id } = req.params;
       await Campground.findByIdAndDelete(id);
       req.flash('success', 'You have successfully deleted a campground!');
