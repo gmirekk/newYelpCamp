@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require('dotenv').config();
+}
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -16,6 +20,7 @@ const reviewRoutes = require('./routes/reviews');
 const passport = require('passport');
 const passportLocal = require('passport-local');
 const User = require('./models/user');
+
 
 
 
@@ -66,7 +71,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req,res,next) => {
-  console.log(req.session)
   res.locals.currentUser = req.user;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');

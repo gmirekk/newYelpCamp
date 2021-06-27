@@ -24,9 +24,22 @@ const seedDB = async() => {
             author: '60d0a607823b7d5308c14e32',
             location: `${cities[random1000].city}, ${cities[random1000].state}`, // USING THE RANDOM NUMBER IT PICKS BOTH CITY AND STATE
             title: `${sample(descriptors)} ${sample(places)}`, // PASSES TWO ARRAYS INTO SAMPLE FUNCTION AND PICKS TWO RANDOM PLACES AND DESCRIPTIONS
-            image: 'https://source.unsplash.com/collection/483251',
             description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia assumenda necessitatibus atque adipisci consequatur quae quod, culpa esse ducimus porro nemo impedit sit harum ratione quisquam, eveniet quia reprehenderit vero.',
-            price
+            price,
+            geometry:{
+              type:'Point',
+              coordinates:[16.439848,43.506829]
+            },
+            images: [
+                {
+                  url: 'https://source.unsplash.com/collection/4651015',
+                  filename: 'YelpCamp/qiszijzc4vjm1vbejmei'
+                },
+                {
+                  url: 'https://source.unsplash.com/collection/483251',
+                  filename: 'YelpCamp/qhmnui5ngg1pww1ayhyp'
+                },
+              ],
         })
         await camp.save();
     }

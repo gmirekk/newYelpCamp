@@ -5,15 +5,19 @@ const Campground = require('../models/campground');
 const {isLoggedIn, isAuthor, validateCampground} = require('../middleware');
 const campgrounds = require('../controllers/campgrounds');
 
+const multer  = require('multer');
+const {storage} = require('../cloudinary/index');
+const upload = multer({ storage });
+
 router.route('/')
   .get(wrapAsync(campgrounds.index))
-  .post(isLoggedIn, validateCampground, wrapAsync(campgrounds.createCampground))
+  .post(isLoggedIn, upload.array('image'), validateCampground, wrapAsync(campgrounds.createCampground))
   
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
 
 router.route('/:id')
   .get(wrapAsync(campgrounds.showCampground))
-  .put(isLoggedIn, isAuthor, validateCampground, wrapAsync(campgrounds.editCampground))
+  .put(isLoggedIn, isAuthor, upload.array('image'), validateCampground, wrapAsync(campgrounds.editCampground))
   .delete(isLoggedIn, isAuthor, wrapAsync(campgrounds.deletingCampground))
 
 router.get('/:id/edit',isLoggedIn, isAuthor, wrapAsync(campgrounds.renderEditForm))
