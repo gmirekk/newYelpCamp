@@ -17,7 +17,7 @@ const sample = array => array[Math.floor(Math.random() * array.length)]
 // REMOVING EVERYTHING  IN THE DATABASE AND ADDING NEW CAMPGROUNDS
 const seedDB = async() => {
     await Campground.deleteMany({}); //DELETES EVERYTHING
-    for(let i = 0; i < 50; i++) {
+    for(let i = 0; i < 500; i++) {
         const random1000 = Math.floor(Math.random() * 1000) // GENERATES RANDOM NUMBER FROM 0 TO 1000(THAT'S HAVE MANY CITIES IS IN  THE FILE)
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({ // CREATES NEW CAMPGROUND FOR EACH LOOP
@@ -28,7 +28,7 @@ const seedDB = async() => {
             price,
             geometry:{
               type:'Point',
-              coordinates:[16.439848,43.506829]
+              coordinates:[cities[random1000].longitude, cities[random1000].latitude]
             },
             images: [
                 {
