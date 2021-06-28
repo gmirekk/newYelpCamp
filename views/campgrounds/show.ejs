@@ -53,8 +53,15 @@
       </div>
     </div>
     <div class="col-6">
-    <div id='map' style='width: 600px; height: 300px;'></div>
+    <div id='map' class="mb-4"></div>
+          <div class="mb-3">
+          <% if(!currentUser) {%> 
+            <h2>Reviews</h2>
+          <% } %> 
+          </div>
+
       <% if(currentUser) { %>
+        <div class="mt-3">
         <h2>Leave a Review</h2>
         <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="mb-3 validate-form" novalidate>
 
@@ -83,6 +90,7 @@
           </div>
           <button class="btn btn-success">Submit</button>
         </form>
+        </div>
         <% } %>
           <% for(let review of campground.reviews) { %>
             <div class="card mb-3">
